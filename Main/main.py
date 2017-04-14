@@ -10,7 +10,7 @@ import nltk
 # For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory
 
 from subprocess import check_output
-print(check_output(["ls", "../input"]).decode("utf8"))
+#print(check_output(["ls", "../data"]).decode("utf8")) #msp commented out
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.svm import SVC
@@ -19,20 +19,20 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 # Any results you write to the current directory are saved as output.
-data = pd.read_csv('../input/Combined_News_DJIA.csv')
+data = pd.read_csv('../data/Combined_News_DJIA.csv')
 data.head()
 
 train = data[data['Date'] < '2015-01-01']
 test = data[data['Date'] > '2014-12-31']
 trainin1 = [data['Top1'][i] + " " + data['Top2'][i] + " " + data['Top3'][i] + " " + data['Top4'][i] + " " + data['Top5'][i] for i in range(len(train))]
 testin1 = [data['Top1'][i] + " " + data['Top2'][i] + " " + data['Top3'][i] + " " + data['Top4'][i] + " " + data['Top5'][i] for i in range(len(train), len(train)+len(test))]
-djia = pd.read_csv('../input/DJIA_table.csv')
+djia = pd.read_csv('../data/DJIA_table.csv')
 #percents = [100*(a - djia['Open'][i])/a for i, a in enumerate(djia['Close'])]
 percents = list(map(int, data['Label']))
 
 trainout = percents[:len(trainin1)]
 testout = percents[:len(testin1)]
-print(len(testout))
+print("len(testout): {}".format(len(testout)))
 
 count_vect = CountVectorizer()
 trainvec = count_vect.fit_transform(trainin1+testin1)
@@ -81,10 +81,10 @@ for i, a in enumerate(testin):
     
 trainin = np.array(trainin)[1:]
 testin = np.array(testin)
-print(trainin.shape)
-print(len(trainout))
-print(testin.shape)
-print(len(testout))
+print("trainin.shape: {}".format(trainin.shape))
+print("len(trainout) = {}".format(len(trainout)))
+print("testin.shape: {}".format(testin.shape))
+print("len(testout) = {}".format(len(testout)))
 '''
 svr_lin = SVR(kernel= 'linear', C= 1e3)
 svr_poly = SVR(kernel= 'poly', C= 1e3, degree= 2)
@@ -110,7 +110,7 @@ svm.fit(trainin, trainout)
 r = svm.predict(testin)
 results = [r[i] == a for i, a in enumerate(testout)]
 t = len([a for a in results if a])
-print(t)
+print("t: {}".format(t))
 t2 = len([a for a in results if not a])
-print(t2)
-print(float(t)/float(t+t2))
+print("t2: {}".format(t2))
+print("float(t)/float(t+t2) = {}".format(float(t)/float(t+t2)))
